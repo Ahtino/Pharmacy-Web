@@ -229,18 +229,18 @@
 
                     <!-- Status -->
                     <td>
-                            <span th:if="${med.isExpired()}" class="text-danger fw-bold">
-                                <i class="bi bi-x-circle-fill"></i> Expired
-                            </span>
-                        <span th:elif="${med.daysUntilExpiry <= 10}" class="text-danger fw-bold">
-                                <i class="bi bi-exclamation-octagon-fill"></i> CRITICAL
-                            </span>
-                        <span th:elif="${med.isExpiringSoon()}" class="text-warning fw-bold">
-                                <i class="bi bi-hourglass-split"></i> Expiring Soon
-                            </span>
-                        <span th:unless="${med.isExpired() or med.isExpiringSoon()}" class="text-success">
-                                <i class="bi bi-check-circle-fill"></i> Safe
-                            </span>
+    <span th:if="${med.isExpired()}" class="day-badge bg-danger text-white">
+        <i class="bi bi-x-circle-fill"></i> Expired
+    </span>
+                        <span th:if="${!med.isExpired() and med.daysUntilExpiry <= 10}" class="day-badge bg-danger text-white">
+        <i class="bi bi-exclamation-octagon-fill"></i> CRITICAL
+    </span>
+                        <span th:if="${!med.isExpired() and med.daysUntilExpiry > 10 and med.daysUntilExpiry <= 30}" class="day-badge bg-warning text-dark">
+        <i class="bi bi-hourglass-split"></i> Expiring Soon
+    </span>
+                        <span th:if="${!med.isExpired() and med.daysUntilExpiry > 30}" class="day-badge bg-success text-white">
+        <i class="bi bi-check-circle-fill"></i> Safe
+    </span>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(medicines)}">
