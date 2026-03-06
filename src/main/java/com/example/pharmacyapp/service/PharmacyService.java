@@ -5,21 +5,29 @@ import com.example.pharmacyapp.repository.PharmacyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PharmacyService {
+
     @Autowired
     private PharmacyRepository repo;
 
+
     public Pharmacy register(Pharmacy pharmacy) {
-        pharmacy.setPassword(pharmacy.getPassword());  // Hash the raw password from form
+        pharmacy.hashAndSetPassword(pharmacy.getPassword());
         return repo.save(pharmacy);
     }
 
     public Pharmacy login(String name, String password) {
-        Pharmacy p = repo.findByName(name);
-        if (p != null && p.checkPassword(password)) {
-            return p;
-        }
-        return null;
+        List<Pharmacy> results = repo.findByName(name);
+        if (results.isEmpty()) return null;
+        Pharmacy p = results.get(0);
+        return p.checkPassword(password) ? p : null;
+    }
+
+    // Used in controller to check duplicates
+    public List<Pharmacy> findByName(String name) {
+        return repo.findByName(name);
     }
 }

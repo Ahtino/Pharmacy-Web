@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
 
 @Controller
 public class PharmacyController {
@@ -57,8 +58,10 @@ public class PharmacyController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute Pharmacy pharmacy, Model model) {
-        if (pharmacyService.login(pharmacy.getName(), pharmacy.getPassword()) != null) {  // Check with raw password
+        // Check if name already exists
+        if (!pharmacyService.findByName(pharmacy.getName()).isEmpty()) {
             model.addAttribute("error", "Pharmacy name already exists");
+            model.addAttribute("pharmacy", pharmacy);
             return "register";
         }
         pharmacyService.register(pharmacy);
