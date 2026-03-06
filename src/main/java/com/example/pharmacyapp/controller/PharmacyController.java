@@ -71,11 +71,13 @@ public class PharmacyController {
         if (pharmacyId == null) {
             return "redirect:/login";
         }
+
         model.addAttribute("medicines", medicineService.getAllMedicines(pharmacyId));
-        model.addAttribute("critical", medicineService.getCritical(pharmacyId));        // NEW
+        model.addAttribute("critical", medicineService.getCritical(pharmacyId));
         model.addAttribute("expiringSoon", medicineService.getExpiringSoon(pharmacyId));
         model.addAttribute("expired", medicineService.getExpired(pharmacyId));
         model.addAttribute("newMedicine", new Medicine());
+        model.addAttribute("pharmacyName", session.getAttribute("pharmacyName")); // ← THIS WAS MISSING
         return "inventory";
     }
 
