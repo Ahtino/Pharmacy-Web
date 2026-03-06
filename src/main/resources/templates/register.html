@@ -1,0 +1,15 @@
+<!-- Same head as above -->
+<div class="card shadow-lg">
+    <div class="card-body p-5">
+        <h2 class="text-center mb-4 text-primary">Register New Pharmacy</h2>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <form th:action="@{/register}" th:object="${pharmacy}" method="post">
+            <input type="text" th:field="*{name}" class="form-control form-control-lg mb-3" placeholder="Pharmacy Name" required>
+            <input type="password" th:field="*{passwordHash}" class="form-control form-control-lg mb-4" placeholder="Create Password" required>
+            <button type="submit" class="btn btn-success btn-lg w-100">Register Pharmacy</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="/login">Already have account? Login</a>
+        </div>
+    </div>
+</div>

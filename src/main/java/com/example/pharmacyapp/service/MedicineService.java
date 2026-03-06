@@ -5,7 +5,7 @@ import com.example.pharmacyapp.repository.MedicineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,17 +15,38 @@ public class MedicineService {
     private MedicineRepository repository;
 
     public List<Medicine> getAllMedicines() {
-        return repository.findAll();
+        // Sort by expiryDate ascending (FEFO: earliest expiry first)
+        return repository.findAll().stream()
+                .sorted(Comparator.comparing(Medicine::getExpiryDate))
+                .collect(Collectors.toList());
     }
 
     public void addMedicine(Medicine medicine) {
         repository.save(medicine);
     }
 
-    public List<Medicine> getExpiringSoon() {
-        LocalDate now = LocalDate.now();
+    public List<Medicine> getExpiringSoon(Long pharmacyId) {
         return getAllMedicines().stream()
-                .filter(m -> m.getExpirationDate().isBefore(now.plusDays(30)))
+                .filter(Medicine::isExpiringSoon)
                 .collect(Collectors.toList());
     }
+
+    public List<Medicine> getExpired(Long pharmacyId) {
+        return getAllMedicines().stream()
+                .filter(Medicine::isExpired)
+                .collect(Collectors.toList());
+    }
+
+    public List<Medicine> getAllMedicines(Long pharmacyId) {
+        return repository.findByPharmacyId(pharmacyId).stream()
+                .sorted(Comparator.comparing(Medicine::getExpiryDate))
+                .collect(Collectors.toList());
+    }
+
+    public void addMedicine(Medicine medicine, Long pharmacyId) {
+        medicine.setPharmacyId(pharmacyId);
+        repository.save(medicine);
+    }
+
+// Update other methods the same way (add pharmacyId parameter)
 }
