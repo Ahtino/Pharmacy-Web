@@ -1,4 +1,4 @@
-package com.example.pharmacyapp.model;
+package com.example.pharmacytracker.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Data // Lombok: Generates getters, setters, toString, etc.
+@Data
 public class Medicine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,16 +17,26 @@ public class Medicine {
 
     private String name;
     private int quantity;
+    private LocalDate importDate;   // NEW
     private LocalDate expiryDate;
-    private Long pharmacyId;   // ← ADD THIS LINE
+    private Long pharmacyId;
 
-    // Helper for Pharmacist: Check if expired
     public boolean isExpired() {
         return expiryDate.isBefore(LocalDate.now());
     }
 
-    // Check if expiring soon (e.g., within 30 days)
     public boolean isExpiringSoon() {
-        return !isExpired() && ChronoUnit.DAYS.between(LocalDate.now(), expiryDate) <= 30;
+        return !isExpired() && getDaysUntilExpiry() <= 30;
+    }
+
+    // NEW: days remaining until expiry
+    public long getDaysUntilExpiry() {
+        return ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
+    }
+
+    // NEW: total shelf life in days (import → expiry)
+    public long getTotalShelfDays() {
+        if (importDate == null) return 0;
+        return ChronoUnit.DAYS.between(importDate, expiryDate);
     }
 }

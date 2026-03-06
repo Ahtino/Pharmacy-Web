@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -14,10 +15,13 @@ public class Pharmacy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;           // Pharmacy name (used as "username")
-    private String passwordHash;   // Never store plain password!
+    private String name;
 
-    // Helper to hash password
+    private String passwordHash;
+
+    @Transient  // Not saved to DB
+    private String password;  // For form input
+
     public void setPassword(String rawPassword) {
         this.passwordHash = new BCryptPasswordEncoder().encode(rawPassword);
     }

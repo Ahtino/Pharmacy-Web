@@ -14,29 +14,6 @@ public class MedicineService {
     @Autowired
     private MedicineRepository repository;
 
-    public List<Medicine> getAllMedicines() {
-        // Sort by expiryDate ascending (FEFO: earliest expiry first)
-        return repository.findAll().stream()
-                .sorted(Comparator.comparing(Medicine::getExpiryDate))
-                .collect(Collectors.toList());
-    }
-
-    public void addMedicine(Medicine medicine) {
-        repository.save(medicine);
-    }
-
-    public List<Medicine> getExpiringSoon(Long pharmacyId) {
-        return getAllMedicines().stream()
-                .filter(Medicine::isExpiringSoon)
-                .collect(Collectors.toList());
-    }
-
-    public List<Medicine> getExpired(Long pharmacyId) {
-        return getAllMedicines().stream()
-                .filter(Medicine::isExpired)
-                .collect(Collectors.toList());
-    }
-
     public List<Medicine> getAllMedicines(Long pharmacyId) {
         return repository.findByPharmacyId(pharmacyId).stream()
                 .sorted(Comparator.comparing(Medicine::getExpiryDate))
@@ -48,5 +25,15 @@ public class MedicineService {
         repository.save(medicine);
     }
 
-// Update other methods the same way (add pharmacyId parameter)
+    public List<Medicine> getExpiringSoon(Long pharmacyId) {
+        return getAllMedicines(pharmacyId).stream()
+                .filter(Medicine::isExpiringSoon)
+                .collect(Collectors.toList());
+    }
+
+    public List<Medicine> getExpired(Long pharmacyId) {
+        return getAllMedicines(pharmacyId).stream()
+                .filter(Medicine::isExpired)
+                .collect(Collectors.toList());
+    }
 }

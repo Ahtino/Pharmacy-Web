@@ -11,7 +11,7 @@ public class PharmacyService {
     private PharmacyRepository repo;
 
     public Pharmacy register(Pharmacy pharmacy) {
-        pharmacy.setPassword(pharmacy.getPasswordHash()); // hash it
+        pharmacy.setPassword(pharmacy.getPassword());  // Hash the raw password from form
         return repo.save(pharmacy);
     }
 

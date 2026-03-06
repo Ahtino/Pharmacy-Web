@@ -37,7 +37,7 @@ public class PharmacyController {
     public String login(@RequestParam String name,
                         @RequestParam String password,
                         HttpSession session, Model model) {
-        Pharmacy pharmacy = pharmacyService.login(name, password);
+        Pharmacy pharmacy = pharmacyService.login(name, password);  // Uses raw password
         if (pharmacy != null) {
             session.setAttribute("pharmacyId", pharmacy.getId());
             session.setAttribute("pharmacyName", pharmacy.getName());
@@ -56,7 +56,7 @@ public class PharmacyController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute Pharmacy pharmacy, Model model) {
-        if (pharmacyService.login(pharmacy.getName(), pharmacy.getPasswordHash()) != null) {
+        if (pharmacyService.login(pharmacy.getName(), pharmacy.getPassword()) != null) {  // Check with raw password
             model.addAttribute("error", "Pharmacy name already exists");
             return "register";
         }
@@ -72,7 +72,8 @@ public class PharmacyController {
             return "redirect:/login";
         }
         model.addAttribute("medicines", medicineService.getAllMedicines(pharmacyId));
-        model.addAttribute("pharmacyName", session.getAttribute("pharmacyName"));
+        model.addAttribute("expiringSoon", medicineService.getExpiringSoon(pharmacyId));
+        model.addAttribute("expired", medicineService.getExpired(pharmacyId));
         model.addAttribute("newMedicine", new Medicine());
         return "inventory";
     }
