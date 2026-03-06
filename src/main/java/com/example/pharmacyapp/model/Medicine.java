@@ -1,4 +1,4 @@
-package com.example.pharmacytracker.model;
+package com.example.pharmacyapp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

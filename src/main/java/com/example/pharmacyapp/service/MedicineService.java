@@ -25,9 +25,17 @@ public class MedicineService {
         repository.save(medicine);
     }
 
+    // Under 10 days — CRITICAL
+    public List<Medicine> getCritical(Long pharmacyId) {
+        return getAllMedicines(pharmacyId).stream()
+                .filter(m -> !m.isExpired() && m.getDaysUntilExpiry() <= 10)
+                .collect(Collectors.toList());
+    }
+
+    // 10–30 days
     public List<Medicine> getExpiringSoon(Long pharmacyId) {
         return getAllMedicines(pharmacyId).stream()
-                .filter(Medicine::isExpiringSoon)
+                .filter(m -> !m.isExpired() && m.getDaysUntilExpiry() > 10 && m.getDaysUntilExpiry() <= 30)
                 .collect(Collectors.toList());
     }
 
