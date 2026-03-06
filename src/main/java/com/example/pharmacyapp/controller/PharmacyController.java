@@ -29,7 +29,8 @@ public class PharmacyController {
 
     // ==================== LOGIN PAGE ====================
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(Model model) {
+        model.addAttribute("error", null); // ← prevents Thymeleaf crash
         return "login";
     }
 
