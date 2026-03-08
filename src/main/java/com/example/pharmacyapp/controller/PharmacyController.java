@@ -8,7 +8,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PharmacyController {
@@ -93,14 +96,6 @@ public class PharmacyController {
             return "redirect:/login";
         }
         medicineService.addMedicine(medicine, pharmacyId);
-        return "redirect:/inventory";
-    }
-
-    @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Long id, HttpSession session) {
-        Long pharmacyId = (Long) session.getAttribute("pharmacyId");
-        if (pharmacyId == null) return "redirect:/login";
-        medicineService.deleteMedicine(id, pharmacyId);
         return "redirect:/inventory";
     }
 
