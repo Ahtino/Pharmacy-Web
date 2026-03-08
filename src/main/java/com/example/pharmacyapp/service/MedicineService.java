@@ -26,6 +26,14 @@ public class MedicineService {
         repository.save(medicine);
     }
 
+    public void deleteMedicine(Long id, Long pharmacyId) {
+        repository.findById(id).ifPresent(med -> {
+            if (med.getPharmacyId().equals(pharmacyId)) {
+                repository.delete(med);
+            }
+        });
+    }
+
     // Under 10 days
     public List<Medicine> getCritical(Long pharmacyId) {
         return getAllMedicines(pharmacyId).stream()
