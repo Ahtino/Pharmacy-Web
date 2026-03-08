@@ -85,34 +85,24 @@ public class PharmacyController {
         return "redirect:/inventory";
     }
 
-    // Edit — inline POST only, no separate page
-    @PostMapping("/edit/{id}")
-    public String editSave(@PathVariable Long id,
-                           @ModelAttribute Medicine medicine,
-                           HttpSession session) {
+    // Update quantity
+    @PostMapping("/quantity/{id}")
+    public String updateQuantity(@PathVariable Long id,
+                                 @RequestParam int quantity,
+                                 HttpSession session) {
         Long pharmacyId = (Long) session.getAttribute("pharmacyId");
         if (pharmacyId == null) return "redirect:/login";
-        medicineService.updateMedicine(id, medicine, pharmacyId);
-        return "redirect:/inventory?success=Medicine+updated+successfully";
+        String err = medicineService.updateQuantity(id, quantity, pharmacyId);
+        if (err != null) return "redirect:/inventory?error=" + err.replace(" ", "+");
+        return "redirect:/inventory?success=Quantity+updated";
     }
 
+    // Delete
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id, HttpSession session) {
         Long pharmacyId = (Long) session.getAttribute("pharmacyId");
         if (pharmacyId == null) return "redirect:/login";
         medicineService.deleteMedicine(id, pharmacyId);
         return "redirect:/inventory?success=Medicine+deleted";
-    }
-
-    @PostMapping("/sell/{id}")
-    public String sell(@PathVariable Long id,
-                       @RequestParam int qty,
-                       HttpSession session) {
-        Long pharmacyId = (Long) session.getAttribute("pharmacyId");
-        if (pharmacyId == null) return "redirect:/login";
-        String err = medicineService.sellMedicine(id, qty, pharmacyId);
-        if (err != null)
-            return "redirect:/inventory?error=" + err.replace(" ", "+");
-        return "redirect:/inventory?success=Stock+updated+successfully";
     }
 }
