@@ -182,13 +182,12 @@
 
         <div class="card-body-inner">
 
-            <div th:if="${param.registered != null}" class="alert-custom alert-ok">
-                <i class="bi bi-check-circle-fill"></i>
-                Registration successful! Please sign in.
+            <div th:if="${param.registered != null}" class="alert alert-success d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                Registration successful! Please login.
             </div>
-
-            <div th:if="${error != null and !#strings.isEmpty(error)}" class="alert-custom alert-err">
-                <i class="bi bi-exclamation-circle-fill"></i>
+            <div th:if="${error != null}" class="alert alert-danger d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <span th:text="${error}"></span>
             </div>
 

@@ -1,6 +1,9 @@
 package com.example.pharmacyapp.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -8,7 +11,6 @@ import java.time.temporal.ChronoUnit;
 @Entity
 @Data
 public class Medicine {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,34 +22,19 @@ public class Medicine {
     private Long pharmacyId;
 
     public boolean isExpired() {
-        if (expiryDate == null) return false;
         return expiryDate.isBefore(LocalDate.now());
     }
 
     public boolean isExpiringSoon() {
-        if (expiryDate == null) return false;
         return !isExpired() && getDaysUntilExpiry() <= 30;
     }
 
     public long getDaysUntilExpiry() {
-        if (expiryDate == null) return 9999;  // ← was 0, which triggers critical/expired incorrectly
         return ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
     }
 
     public long getTotalShelfDays() {
-        if (importDate == null || expiryDate == null) return 0;
-        long days = ChronoUnit.DAYS.between(importDate, expiryDate);
-        return days > 0 ? days : 0;
-    }
-
-    public int getShelfLifePercent() {
-        long total = getTotalShelfDays();
-        if (total <= 0) return 100;
-        if (isExpired()) return 100;
-        long used = total - getDaysUntilExpiry();
-        int percent = (int) (used * 100 / total);
-        if (percent < 0) return 0;
-        if (percent > 100) return 100;
-        return percent;
+        if (importDate == null) return 0;
+        return ChronoUnit.DAYS.between(importDate, expiryDate);
     }
 }

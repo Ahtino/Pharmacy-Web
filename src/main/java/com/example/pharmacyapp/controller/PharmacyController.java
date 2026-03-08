@@ -8,25 +8,34 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PharmacyController {
 
-    @Autowired private PharmacyService pharmacyService;
-    @Autowired private MedicineService medicineService;
+    @Autowired
+    private PharmacyService pharmacyService;
+
+    @Autowired
+    private MedicineService medicineService;
 
     @GetMapping("/")
-    public String root() { return "redirect:/login"; }
+    public String root() {
+        return "redirect:/login";  // Or "/register" if preferred
+    }
 
     @GetMapping("/login")
     public String loginPage(Model model) {
-        model.addAttribute("error", null);
+        model.addAttribute("error", null); // ← prevents Thymeleaf crash
         return "login";
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String name, @RequestParam String password,
+    public String login(@RequestParam String name,
+                        @RequestParam String password,
                         HttpSession session, Model model) {
         Pharmacy pharmacy = pharmacyService.login(name, password);
         if (pharmacy != null) {
@@ -46,63 +55,53 @@ public class PharmacyController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute Pharmacy pharmacy, Model model) {
-        if (!pharmacyService.findByName(pharmacy.getName()).isEmpty()) {
+        if (pharmacyService.login(pharmacy.getName(), pharmacy.getPasswordHash()) != null) {
             model.addAttribute("error", "Pharmacy name already exists");
-            model.addAttribute("pharmacy", pharmacy);
             return "register";
         }
         pharmacyService.register(pharmacy);
         return "redirect:/login?registered=true";
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
-    }
-
     @GetMapping("/inventory")
-    public String inventory(HttpSession session, Model model,
-                            @RequestParam(required = false) String error,
-                            @RequestParam(required = false) String success) {
+    public String inventory(HttpSession session, Model model) {
         Long pharmacyId = (Long) session.getAttribute("pharmacyId");
-        if (pharmacyId == null) return "redirect:/login";
-        model.addAttribute("medicines", medicineService.getAllMedicines(pharmacyId));
-        model.addAttribute("critical", medicineService.getCritical(pharmacyId));
-        model.addAttribute("expiringSoon", medicineService.getExpiringSoon(pharmacyId));
-        model.addAttribute("newMedicine", new Medicine());
-        model.addAttribute("pharmacyName", session.getAttribute("pharmacyName"));
-        model.addAttribute("error", error);
-        model.addAttribute("success", success);
-        return "inventory";
-    }
 
+        // DEBUG: print to Railway logs
+        System.out.println("=== INVENTORY HIT === pharmacyId: " + pharmacyId);
+
+        if (pharmacyId == null) {
+            System.out.println("=== NO SESSION, redirecting to login ===");
+            return "redirect:/login";
+        }
+
+        try {
+            model.addAttribute("medicines", medicineService.getAllMedicines(pharmacyId));
+            model.addAttribute("critical", medicineService.getCritical(pharmacyId));
+            model.addAttribute("expiringSoon", medicineService.getExpiringSoon(pharmacyId));
+            model.addAttribute("expired", medicineService.getExpired(pharmacyId));
+            model.addAttribute("newMedicine", new Medicine());
+            model.addAttribute("pharmacyName", session.getAttribute("pharmacyName"));
+            return "inventory";
+        } catch (Exception e) {
+            System.out.println("=== INVENTORY ERROR: " + e.getMessage());
+            model.addAttribute("error", "Error loading inventory: " + e.getMessage());
+            return "login";
+        }
+    }
     @PostMapping("/add")
     public String addMedicine(@ModelAttribute Medicine medicine, HttpSession session) {
         Long pharmacyId = (Long) session.getAttribute("pharmacyId");
-        if (pharmacyId == null) return "redirect:/login";
+        if (pharmacyId == null) {
+            return "redirect:/login";
+        }
         medicineService.addMedicine(medicine, pharmacyId);
         return "redirect:/inventory";
     }
 
-    // Update quantity
-    @PostMapping("/quantity/{id}")
-    public String updateQuantity(@PathVariable Long id,
-                                 @RequestParam int quantity,
-                                 HttpSession session) {
-        Long pharmacyId = (Long) session.getAttribute("pharmacyId");
-        if (pharmacyId == null) return "redirect:/login";
-        String err = medicineService.updateQuantity(id, quantity, pharmacyId);
-        if (err != null) return "redirect:/inventory?error=" + err.replace(" ", "+");
-        return "redirect:/inventory?success=Quantity+updated";
-    }
-
-    // Delete
-    @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Long id, HttpSession session) {
-        Long pharmacyId = (Long) session.getAttribute("pharmacyId");
-        if (pharmacyId == null) return "redirect:/login";
-        medicineService.deleteMedicine(id, pharmacyId);
-        return "redirect:/inventory?success=Medicine+deleted";
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
     }
 }
