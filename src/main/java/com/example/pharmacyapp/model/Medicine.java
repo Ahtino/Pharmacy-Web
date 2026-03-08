@@ -30,7 +30,7 @@ public class Medicine {
     }
 
     public long getDaysUntilExpiry() {
-        if (expiryDate == null) return 0;
+        if (expiryDate == null) return 9999;  // ← was 0, which triggers critical/expired incorrectly
         return ChronoUnit.DAYS.between(LocalDate.now(), expiryDate);
     }
 

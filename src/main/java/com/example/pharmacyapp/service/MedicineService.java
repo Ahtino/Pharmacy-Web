@@ -18,7 +18,8 @@ public class MedicineService {
 
     public List<Medicine> getAllMedicines(Long pharmacyId) {
         return repository.findByPharmacyId(pharmacyId).stream()
-                .sorted(Comparator.comparing(Medicine::getExpiryDate))
+                .sorted(Comparator.comparing(Medicine::getExpiryDate,
+                        Comparator.nullsLast(Comparator.naturalOrder())))  // ← add null safety
                 .collect(Collectors.toList());
     }
 
