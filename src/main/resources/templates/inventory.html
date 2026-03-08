@@ -367,14 +367,14 @@
                             <div class="shelf-total" th:text="${med.totalShelfDays} + 'd total'"></div>
                             <div class="shelf-bar-bg">
                                 <div class="shelf-bar-fill"
-                                     th:with="used=${T(java.lang.Math).min(100, T(java.lang.Math).max(0, (med.totalShelfDays - (med.isExpired() ? 0 : med.daysUntilExpiry)) * 100 / med.totalShelfDays))}"
                                      th:classappend="${med.isExpired()} ? 'fill-danger' :
-                                                         (${med.daysUntilExpiry <= 10} ? 'fill-danger' :
-                                                         (${med.isExpiringSoon()} ? 'fill-warn' : 'fill-safe'))"
-                                     th:style="'width:' + ${used} + '%'">
+                                 (${med.daysUntilExpiry <= 10} ? 'fill-danger' :
+                                 (${med.isExpiringSoon()} ? 'fill-warn' : 'fill-safe'))"
+                                     th:style="'width:' + ${med.shelfLifePercent} + '%'">
                                 </div>
                             </div>
                         </div>
+
                         <span th:unless="${med.importDate != null and med.totalShelfDays > 0}"
                               style="color:rgba(255,255,255,0.2);">—</span>
                     </td>

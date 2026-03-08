@@ -39,4 +39,15 @@ public class Medicine {
         long days = ChronoUnit.DAYS.between(importDate, expiryDate);
         return days > 0 ? days : 0;
     }
+
+    public int getShelfLifePercent() {
+        long total = getTotalShelfDays();
+        if (total <= 0) return 100;
+        if (isExpired()) return 100;
+        long used = total - getDaysUntilExpiry();
+        int percent = (int) (used * 100 / total);
+        if (percent < 0) return 0;
+        if (percent > 100) return 100;
+        return percent;
+    }
 }
