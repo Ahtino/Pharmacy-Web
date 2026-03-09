@@ -8,7 +8,7 @@
 <p>next we need to copy the value of PGDATABASE, PGHOST(copy URL from public network domain), PGPORT(number in URL from public network domain), PGPASSWORD, PGUSER from a variable in the PostgreSQL database, and paste it into a variable of springboot project</p>
 <p>then deploy it and it will succeed </p>
 <p> If it fails to deploy u need to create a file named mise.toml to have the same environment as railway, and I use maven, so I need to change my maven version to 3.9.9</p>
-<p>Also, Railway only support java 17 or 21. If you use Java 25, it might crash, but I used maven thaty doesn't matter.<\p>
+<p>Also, Railway only support java 17 or 21. If you use Java 25, it might crash, but I used maven thaty doesn't matter.</p>
 <p>for java u need to use version 21.0.2</p>
 <br>
   
