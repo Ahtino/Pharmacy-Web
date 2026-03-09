@@ -11,14 +11,47 @@
 <p>Also, Railway only support java 17 or 21. If you use Java 25, it might crash, but I used maven thaty doesn't matter.<\p>
 <p>for java u need to use version 21.0.2</p>
 <br>
+  
 <h2> What I use in this project:</h2>
 <p>- Railway for deploy</p>
 <p>- IDE for SpringBoot</p>
 <p>- PostgreSQL for Database</p>
-<p>- in Springboot i use thymeleaf, lombok, Spring web, Spring security, Spring Data JPA, PostgreSQL Driver</p>
+<p>- In Spring Boot, I use Thymeleaf, Lombok, Spring Web, Spring Security, Spring Data JPA, PostgreSQL Driver</p>
+
 <h2>Link to Website:</h2><br>
-<a href="https://employee-production-b606.up.railway.app/">Link</a>
+<a href="https://pharmacy-web-production.up.railway.app/">Link</a>
 <h2>Data Base Figure:</h2>
 
-@Table(name = "admins")
-public class Admin {
+@Table(name = "medicine")
+@Entity
+@Data
+public class Medicine {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private int quantity;
+    private LocalDate importDate;
+    private LocalDate expiryDate;
+    private Long pharmacyId;}
+<br>
+    
+@Table(name = "pharmacy")
+@Entity
+@Data
+public class Pharmacy {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String name;
+
+    private String passwordHash;
+
+    @Transient
+    private String password; }
+
